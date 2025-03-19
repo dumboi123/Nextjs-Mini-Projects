@@ -1,5 +1,6 @@
 // pages/[id].js
-'use client';
+// 'use client';
+"use client";
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -24,7 +25,8 @@ const BlogDetails = () => {
           src={blogDetail.imageUrl}
           style={{
             maxWidth: "100%",
-            maxHeight: "300px",
+            maxHeight: "400px",
+            objectFit: "cover",
           }}
           className="card-img-top"
           alt="Blog"

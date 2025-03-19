@@ -34,7 +34,12 @@ function BlogList() {
           {filteredData.map((item) => (
             <div key={item.id} className="col-md-4">
               <div className="card mb-3">
-                <img src={item.imageUrl} className="card-img-top" alt="Blog" />
+                <img
+                  src={item.imageUrl}
+                  className="card-img-top"
+                  alt="Blog"
+                  style={{ width: "100%", height: "200px", objectFit: "contain" }}
+                />
                 <div className="card-body">
                   <h5 className="card-title">{item.title}</h5>
                   <p className="card-text">
