@@ -5,12 +5,43 @@ import Link from "next/link";
 
 function BlogList() {
   const [data, setData] = useState([]);
-  const [expandedId, setExpandedId] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
 
+  const handleDelete = async (id) => {
+    try {
+      const response = await fetch(`/api/${id}`, {
+        method: "DELETE",
+      });
+      if (response.ok) {
+        alert("Blog deleted successfully!");
+        setData((prevData) => prevData.filter((item) => item.id !== id));
+      } else {
+        console.error("Failed to delete blog");
+      }
+    } catch (error) {
+      console.error("Error deleting blog:", error);
+    }
+  };
+
   useEffect(() => {
-    const blogs = JSON.parse(localStorage.getItem("myData") || "[]");
-    setData(blogs);
+    const fetchBlogs = async () => {
+      try {
+        const response = await fetch("/api", {
+          method: "GET",
+        });
+
+        if (response.ok) {
+          const blogs = await response.json();
+          console.log("Blogs:", blogs);
+          setData(blogs);
+        } else {
+          console.error("Failed to fetch blogs");
+        }
+      } catch (error) {
+        console.error("Error fetching blogs:", error);
+      }
+    };
+    fetchBlogs();
   }, []);
 
   let filteredData = data;
@@ -38,14 +69,16 @@ function BlogList() {
                   src={item.imageUrl}
                   className="card-img-top"
                   alt="Blog"
-                  style={{ width: "100%", height: "200px", objectFit: "contain" }}
+                  style={{
+                    width: "100%",
+                    height: "200px",
+                    objectFit: "contain",
+                  }}
                 />
                 <div className="card-body">
                   <h5 className="card-title">{item.title}</h5>
                   <p className="card-text">
-                    {expandedId === item.id
-                      ? item.description
-                      : `${item.description.substring(0, 50)}...`}
+                    {`${item.description.substring(0, 30)}...`}
                   </p>
                   <div className="d-flex justify-content-between align-items-center row">
                     <div>
@@ -57,8 +90,15 @@ function BlogList() {
                     </div>
                   </div>
                   <Link href={`/${item.id}`}>
-                    <button className="btn btn-primary">Read more</button>
+                    <button className="btn btn-primary" style={{marginTop: "1rem"}}>Read more</button>
                   </Link>
+                  <button
+                    className="btn btn-danger ms-2"
+                    style = {{marginTop: "1rem"}}
+                    onClick={() => handleDelete(item.id)}
+                  >
+                    Delete
+                  </button>
                 </div>
               </div>
             </div>
@@ -68,5 +108,4 @@ function BlogList() {
     </div>
   );
 }
-
 export default BlogList;

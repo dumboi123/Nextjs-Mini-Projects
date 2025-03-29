@@ -1,0 +1,26 @@
+[
+  {
+    "id": "1",
+    "title": "First Blog Post",
+    "description": "This is the first blog post.",
+    "author": "John Doe",
+    "date": "2025-03-28",
+    "imageUrl": "https://th.bing.com/th/id/OIP.B0bxBZsfCCgsd3TetykiHgHaFj?rs=1&pid=ImgDetMain"
+  },
+  {
+    "id": "m8uemtazqjclq",
+    "author": "Trinh",
+    "date": "3/29/2025",
+    "title": "Trinh",
+    "description": "sdasdsadsa",
+    "imageUrl": "https://th.bing.com/th/id/OIP.y2BQ8eFEos_f3SL7r7asxQHaEo?rs=1&pid=ImgDetMain"
+  },
+  {
+    "id": "m8uergzkt2b03",
+    "author": "Trinh",
+    "date": "3/29/2025",
+    "title": "Trinh",
+    "description": "sdasdsadsa",
+    "imageUrl": "blob:http://localhost:3000/b7d03cf1-f671-4853-8b02-207ee3fe2b92"
+  }
+]

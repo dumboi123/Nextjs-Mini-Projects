@@ -4,7 +4,6 @@
 import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Image from "next/image";
-import { redirect } from "next/navigation";
 
 const Createblog = () => {
   const [author, setAuthor] = useState("");
@@ -13,50 +12,80 @@ const Createblog = () => {
   const [choice, setChoice] = useState("");
   const [imageUrl, setImageUrl] = useState();
 
-  const initialBlogs =
-    typeof window !== "undefined"
-      ? JSON.parse(localStorage.getItem("myData")) || []
-      : [];
-  const [data, setData] = useState(initialBlogs);
-
-  const isValidImageUrl = (url) => {
-    return /\.(jpg|jpeg|png|webp|avif|gif|svg)$/.test(url);
+  const router = useRouter();
+  const isValidImageUrl = async (url) => {
+    try {
+      const response = await fetch(url, { method: "HEAD" }); 
+      return response.ok && response.headers.get("Content-Type").startsWith("image/");
+    } catch {
+      return false;
+    }
   };
+
+  // const handleImageChange = (e) => {
+  //   const file = e.target.files[0];
+  //   file && setImageUrl(file); // Lưu file vào state
+  //   // const reader = new FileReader();
+  //   // reader.onloadend = () => {
+  //   //   setImageUrl(reader.result);
+  //   // };
+  //   // reader.readAsDataURL(file);
+  // };
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setImageUrl(reader.result);
-    };
-    reader.readAsDataURL(file);
+    if (file) {
+      const objectUrl = URL.createObjectURL(file);
+      setImageUrl(objectUrl);
+    }
+  };
+  
+  const generateUniqueId = () => {
+    return Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
   };
 
-  useEffect(() => {
-    localStorage.setItem("myData", JSON.stringify(data));
-  }, [data]);
-
-  const addData = () => {
+  const addData = async () => {
     const currentDate = new Date().toLocaleDateString();
     if (!author || !title || !description || !imageUrl) {
       alert("Please fill in all fields and provide a valid image.");
       return;
     }
+    const newId = generateUniqueId();
 
     const newData = {
-      id: data.length + 1,
+      id: newId,
       author: author,
       date: currentDate,
       title: title,
       description: description,
       imageUrl: imageUrl,
     };
-    const updatedData = [...data, newData];
-    setData(updatedData);
-    setAuthor("");
-    setTitle("");
-    setDescription("");
-    setChoice("");
-    setImageUrl("");
+
+    try {
+      const response = await fetch("/api", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newData),
+      });
+
+
+      if (response.ok) {
+        setAuthor("");
+        setTitle("");
+        setDescription("");
+        setChoice("");
+        setImageUrl("");
+        alert("Bài viết đã được thêm thành công!");
+        router.push("/");
+      } else {
+        console.error("Failed to add data");
+      }
+    } catch (error) {
+      console.error("Error adding data:", error);
+    }
+
+    // router.push("/blog");
   };
 
   return (
@@ -109,7 +138,10 @@ const Createblog = () => {
                 onChange={handleImageChange}
               />
             )}
-            <div className="flex justify-center" style={{ marginTop: "1rem" }}>
+            <div
+              className="flex justify-center"
+              style={{ marginTop: "1rem", marginBottom: "1rem" }}
+            >
               {imageUrl &&
                 (choice === "link" ? (
                   isValidImageUrl(imageUrl) ? (
@@ -131,7 +163,7 @@ const Createblog = () => {
                     alt="image"
                     width={400}
                     height={400}
-                    style={{}}
+                    // style={{}}
                   ></Image>
                 ))}
             </div>
@@ -150,3 +182,11 @@ const Createblog = () => {
 };
 
 export default Createblog;
+// *Chọn nhiều ảnh
+// const handleImageChange = (e) => {
+//   const files = Array.from(e.target.files); // Chuyển FileList thành mảng
+//   const objectUrls = files.map((file) => URL.createObjectURL(file)); // Tạo URL cho từng file
+//   setImageUrl(objectUrls); // Lưu danh sách URL vào state
+// };
+// * Nếu dùng  cách này thì cập nhật state 
+// const [imageUrl, setImageUrl] = useState([]); // Lưu danh sách URL của ảnh

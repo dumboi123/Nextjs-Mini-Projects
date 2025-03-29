@@ -9,10 +9,21 @@ const BlogDetails = () => {
   const [blogDetail, setBlogDetail] = useState([]);
   const { id } = useParams();
   useEffect(() => {
-    const blogs = JSON.parse(localStorage.getItem("myData"));
-    const selectedBlog = blogs.find((blog) => blog.id === parseInt(id));
-    setBlogDetail(selectedBlog);
-  }, [id]);
+    const fetchBlogById = async () => {
+      try {
+      const response = await fetch(`/api/${id}`);
+      if (response.ok) {
+        const blog = await response.json();
+        setBlogDetail(blog);
+      } else {
+        console.error("Failed to fetch blog by id");
+      }
+    } catch (error) {
+      console.error("Error fetching blog by id:", error);
+    }
+  };
+    fetchBlogById();
+},[]);
 
   if (!blogDetail) {
     return <div>Loading...</div>;
